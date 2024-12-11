@@ -5,9 +5,18 @@ import { Command } from "@/lib/types";
 const COMMANDS: Command[] = [
   { type: "ping", label: "Ping" },
   { type: "traceroute", label: "Traceroute" },
-  { type: "mtr", label: "MTR" },
-  { type: "bgp", label: "BGP Route" }
+  { type: "bgp", label: "BGP AS Path" },
+  { type: "bgp", label: "BGP Community" },
+  { type: "bgp", label: "BGP Route" },
+  { type: "mtr", label: "MTR" }
 ];
+
+const QUERY_TYPES = {
+  "ping": "Enter IP or hostname",
+  "traceroute": "Enter IP or hostname",
+  "mtr": "Enter IP or hostname",
+  "bgp": "Enter IP prefix or ASN"
+};
 
 interface CommandSelectorProps {
   selectedCommand: Command | null;
