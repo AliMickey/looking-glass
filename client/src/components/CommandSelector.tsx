@@ -5,9 +5,9 @@ import { Command } from "@/lib/types";
 const COMMANDS: Command[] = [
   { type: "ping", label: "Ping" },
   { type: "traceroute", label: "Traceroute" },
-  { type: "bgp", label: "BGP AS Path" },
-  { type: "bgp", label: "BGP Community" },
-  { type: "bgp", label: "BGP Route" },
+  { type: "bgp_path", label: "BGP AS Path", subType: "path" },
+  { type: "bgp_community", label: "BGP Community", subType: "community" },
+  { type: "bgp_route", label: "BGP Route", subType: "route" },
   { type: "mtr", label: "MTR" }
 ];
 
@@ -53,7 +53,7 @@ export default function CommandSelector({
       </Select>
 
       <Input
-        placeholder="Enter IP address or hostname"
+        placeholder={selectedCommand ? QUERY_TYPES[selectedCommand.type.split('_')[0]] : "Select a command first"}
         value={queryTarget}
         onChange={(e) => onQueryTargetChange(e.target.value)}
         className="flex-1"

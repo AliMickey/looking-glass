@@ -15,10 +15,12 @@ export default function Dashboard() {
     queryKey: ['/api/locations'],
   });
 
-  const { data: output, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<{ output: string }>({
     queryKey: ['/api/execute', selectedLocation?.id, selectedCommand?.type, queryTarget],
     enabled: !!(selectedLocation && selectedCommand && queryTarget),
   });
+
+  const output = data?.output;
 
   return (
     <div className="min-h-screen bg-background p-8">
