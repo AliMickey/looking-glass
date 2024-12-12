@@ -8,7 +8,11 @@ channel = "stable-24_05"
 [deployment]
 deploymentTarget = "cloudrun"
 build = ["npm", "run", "build"]
-run = ["sh", "-c", "python3 server/config_loader.py && PORT=5000 npm run dev"]
+run = ["sh", "-c", "python3 server/config_loader.py && PORT=3000 npm run dev"]
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
 
 [[ports]]
 localPort = 5000
@@ -24,10 +28,10 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Config Validator"
+args = "Network Monitor"
 
 [[workflows.workflow]]
-name = "Config Validator"
+name = "Network Monitor"
 author = "agent"
 
 [workflows.workflow.metadata]
@@ -38,5 +42,5 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python3 server/config_loader.py && PORT=5000 npm run dev"
-waitForPort = 5000
+args = "python3 server/config_loader.py && PORT=3000 npm run dev"
+waitForPort = 3000
