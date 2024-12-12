@@ -6,7 +6,7 @@ const config = loadConfig();
 // Export configuration and types
 export const COMMANDS = config.commands;
 export const DEVICES = config.devices;
-export const UI_CONFIG = config.ui;
+export const UI_CONFIG = config.uiConfig;
 
 // Define locations based on device configurations
 export const LOCATIONS = Object.entries(DEVICES).map(([host, device]) => ({

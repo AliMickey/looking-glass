@@ -1,35 +1,17 @@
-# Network Devices Configuration
-# Each device entry must have:
-# - host: Device hostname or IP
-# - username: Login username
-# - password: Login password
-# - device_type: Device type (e.g., cisco_ios)
-# - description: (optional) Device description
-# - enabled_commands: List of allowed commands from commands.yaml
-# - location_id: Location identifier
-
 devices:
-  router1.chi:
-    host: 192.168.1.1
-    username: admin
-    password: secret
-    device_type: cisco_ios
-    description: Chicago Core Router 1
-    enabled_commands:
-      - ping
-      - traceroute
-      - bgp_path
-      - bgp_route
-    location_id: chi
-
-  router2.nyc:
-    host: 192.168.1.2
-    username: admin
-    password: secret
-    device_type: cisco_ios
-    description: New York Core Router 1
-    enabled_commands:
-      - ping
-      - traceroute
-      - mtr
-    location_id: nyc
+  "router1.chi":
+    host: "10.0.1.1"
+    username: "admin"
+    password: "secure123"
+    device_type: "cisco_ios"
+    description: "Chicago Core Router"
+    enabled_commands: ["ping", "traceroute"]
+    location_id: "chi"
+  "router2.nyc":
+    host: "10.0.2.1"
+    username: "admin"
+    password: "secure123"
+    device_type: "cisco_ios"
+    description: "New York Core Router"
+    enabled_commands: ["ping", "traceroute"]
+    location_id: "nyc"

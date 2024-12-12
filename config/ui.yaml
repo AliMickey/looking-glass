@@ -1,23 +1,17 @@
-# UI Configuration for Network Monitor
 branding:
-  # Logo paths - should be accessible from public directory
   logo:
-    light: "/app/assets/logo-light.svg"  # Logo for light mode
-    dark: "/app/assets/logo-dark.svg"    # Logo for dark mode
-  
-  # Header Configuration
+    light: "/assets/logo-light.svg"
+    dark: "/assets/logo-dark.svg"
   header:
-    title: "Network Monitor"         # Title shown in header
-    subtitle: "Network Diagnostic Tool" # Optional subtitle
-  
-  # Footer Configuration
+    title: "Network Monitor"
+    subtitle: "Infrastructure Monitoring Tool"
   footer:
-    text: "© 2024 Network Monitor. All rights reserved."
+    text: "© 2024 Network Monitor"
     links:
-      - label: "Privacy Policy"
-        url: "/privacy"
-      - label: "Terms of Service"
-        url: "/terms"
+      - label: "Documentation"
+        url: "/docs"
+      - label: "Support"
+        url: "/support"
     contact:
       email: "support@example.com"
       phone: "+1 (555) 123-4567"

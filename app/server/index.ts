@@ -1,12 +1,9 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { watch } from "chokidar";
-import { spawn } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

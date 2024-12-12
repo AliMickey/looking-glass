@@ -55,7 +55,10 @@ export type UIConfig = z.infer<typeof UIConfigSchema>;
 // Simple function to load and validate YAML files
 function loadYamlConfig<T>(filePath: string, schema: z.ZodSchema<T>): T {
   try {
-    const configPath = path.resolve(process.cwd(), 'config', filePath);
+    // Move up one directory from /app to get to project root where /config is
+    const projectRoot = path.resolve(process.cwd(), '..');
+    const configPath = path.join(projectRoot, 'config', filePath);
+    console.log(`Loading config from: ${configPath}`);
     const fileContent = readFileSync(configPath, 'utf8');
     const parsed = parse(fileContent);
     return schema.parse(parsed);
@@ -71,26 +74,48 @@ function loadYamlConfig<T>(filePath: string, schema: z.ZodSchema<T>): T {
 
 // Load configuration files
 export function loadConfig() {
-  const commandsConfig = loadYamlConfig(
-    'commands.yaml',
-    z.object({ commands: z.record(CommandSchema) })
-  );
+  try {
+    console.log('Current working directory:', process.cwd());
+    
+    const commandsConfig = loadYamlConfig(
+      'commands.yaml',
+      z.object({ commands: z.record(CommandSchema) })
+    );
 
-  const devicesConfig = loadYamlConfig(
-    'devices.yaml',
-    z.object({ devices: z.record(DeviceSchema) })
-  );
+    const devicesConfig = loadYamlConfig(
+      'devices.yaml',
+      z.object({ devices: z.record(DeviceSchema) })
+    );
 
-  const uiConfig = loadYamlConfig(
-    'ui.yaml',
-    UIConfigSchema
-  );
+    const uiConfig = loadYamlConfig(
+      'ui.yaml',
+      UIConfigSchema
+    );
 
-  return {
-    commands: commandsConfig.commands,
-    devices: devicesConfig.devices,
-    uiConfig,
-  };
+    return {
+      commands: commandsConfig.commands,
+      devices: devicesConfig.devices,
+      uiConfig,
+    };
+  } catch (error) {
+    console.error('Error loading configuration:', error);
+    // Provide default configurations for development
+    return {
+      commands: {},
+      devices: {},
+      uiConfig: {
+        branding: {
+          logo: { light: '', dark: '' },
+          header: { title: 'Network Monitor' },
+          footer: {
+            text: '',
+            links: [],
+            contact: { email: '', phone: '' }
+          }
+        }
+      }
+    };
+  }
 }
 
 // Helper function to get available commands for a device
