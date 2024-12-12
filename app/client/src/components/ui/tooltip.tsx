@@ -1,58 +1,49 @@
-import React from 'react';
-import { cn } from "@/lib/utils";
+import * as React from "react"
+import * as TooltipPrimitive from "@radix-ui/react-tooltip"
+import { cn } from "@/lib/utils"
 
-interface TooltipProps {
-  content: React.ReactNode;
-  children: React.ReactNode;
-  className?: string;
-  side?: 'top' | 'right' | 'bottom' | 'left';
-  align?: 'start' | 'center' | 'end';
-}
+const TooltipProvider = TooltipPrimitive.Provider
+const TooltipTrigger = TooltipPrimitive.Trigger
+const TooltipContent = React.forwardRef<
+  React.ElementRef<typeof TooltipPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
+>(({ className, sideOffset = 4, ...props }, ref) => (
+  <TooltipPrimitive.Content
+    ref={ref}
+    sideOffset={sideOffset}
+    className={cn(
+      "z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      className
+    )}
+    {...props}
+  />
+))
+TooltipContent.displayName = TooltipPrimitive.Content.displayName
 
+// Backwards compatibility wrapper
 const Tooltip = ({
   content,
   children,
   className,
-  side = 'top',
-  align = 'center',
-}: TooltipProps) => {
-  // Convert content to string if it's a React node
-  const tooltipContent = typeof content === 'string' ? content : React.isValidElement(content) ? 'Tooltip' : String(content);
-
-  return (
-    <div 
-      className={cn(
-        "group relative inline-block",
-        className
-      )}
-    >
-      <div className="inline-block">
-        {children}
-      </div>
-      <div
-        className={cn(
-          "invisible group-hover:visible opacity-0 group-hover:opacity-100",
-          "absolute z-50 px-3 py-1.5 rounded-md",
-          "bg-popover text-popover-foreground shadow-md text-sm",
-          "transition-all duration-200",
-          {
-            "-translate-y-full -mt-2": side === 'top',
-            "translate-x-full ml-2": side === 'right',
-            "translate-y-full mt-2": side === 'bottom',
-            "-translate-x-full -ml-2": side === 'left',
-          },
-          {
-            "left-0": align === 'start',
-            "left-1/2 -translate-x-1/2": align === 'center',
-            "right-0": align === 'end',
-          }
-        )}
-        role="tooltip"
-      >
+  side = "top",
+  align = "center",
+}: {
+  content: React.ReactNode
+  children: React.ReactNode
+  className?: string
+  side?: "top" | "right" | "bottom" | "left"
+  align?: "start" | "center" | "end"
+}) => (
+  <TooltipProvider>
+    <TooltipPrimitive.Root>
+      <TooltipTrigger asChild>
+        <span className={className}>{children}</span>
+      </TooltipTrigger>
+      <TooltipContent side={side} align={align}>
         {content}
-      </div>
-    </div>
-  );
-};
+      </TooltipContent>
+    </TooltipPrimitive.Root>
+  </TooltipProvider>
+)
 
-export { Tooltip };
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
