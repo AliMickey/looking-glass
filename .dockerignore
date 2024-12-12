@@ -2,10 +2,24 @@
 node_modules
 __pycache__
 *.pyc
+*.pyo
+*.pyd
+.Python
+*.so
 
 # Build outputs
 dist
 dist-server
+build/
+develop-eggs/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
 
 # Development files
 .git
@@ -18,27 +32,60 @@ dist-server
 *.test.*
 *.spec.*
 coverage
+.editorconfig
+.eslintrc*
+.prettier*
+jest.config.*
+*.test.js
+*.test.ts
+*.test.tsx
 
 # Documentation
 README.md
 docs/
+*.md
+LICENSE
 
 # Docker files
-docker-compose.yml
-Dockerfile
+docker-compose*.yml
+Dockerfile*
 .dockerignore
 
 # Database files
 *.sqlite
 *.db
+*.sqlite3
 
-# Cache
+# Cache and temp files
 .cache
 .npm
 .yarn
+*.tmp
+.temp
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
 
 # Editor files
 *.swp
 *.swo
 .idea/
 *.sublime-*
+.project
+.classpath
+.settings
+.vscode
+*.code-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
