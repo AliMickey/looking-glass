@@ -15,8 +15,9 @@ export default defineConfig({
   },
   root: "./client",
   build: {
-    outDir: "../dist/public",
+    outDir: "../dist/client",
     emptyOutDir: true,
+    copyPublicDir: true,
   },
   server: {
     port: 3000,
