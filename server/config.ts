@@ -3,16 +3,14 @@ import { DeviceConfig } from "@/lib/types";
 export const LOCATIONS = [
   {
     id: "chi",
-    city: "Chicago, IL",
-    code: "US-CHI",
-    shortCode: "CI",
+    deviceName: "Chicago Core Router 1",
+    subtext: "Chicago, IL",
     deviceHost: "router1.chi"
   },
   {
     id: "nyc",
-    city: "New York, NY",
-    code: "US-NYC", 
-    shortCode: "NN",
+    deviceName: "New York Core Router 1",
+    subtext: "New York, NY",
     deviceHost: "router2.nyc"
   }
 ];

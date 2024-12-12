@@ -1,8 +1,7 @@
 export interface Location {
   id: string;
-  city: string;
-  code: string;
-  shortCode: string;
+  deviceName: string;
+  subtext?: string;
   deviceHost: string;
 }
 
