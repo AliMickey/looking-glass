@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
-import { DEVICES, getDeviceCommands } from "./config/devices";
-import { COMMANDS } from "./config/commands";
+import { DEVICES, getDeviceCommands } from "./generated/devices";
+import { COMMANDS } from "./generated/commands";
 import type { DeviceConfig } from "@/lib/types";
 
 export async function executeCommand(deviceHost: string, command: string, target: string): Promise<string> {
