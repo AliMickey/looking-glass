@@ -64,30 +64,31 @@ def load_and_validate_configs() -> tuple[Dict[str, CommandConfig], Dict[str, Dev
     ts_config_dir = Path(__file__).parent / 'config'
     
     with open(str(ts_config_dir / 'commands.ts'), 'w') as f:
-        f.write(f"""import {{ z }} from 'zod';
+        commands_json = json.dumps(commands_config['commands'], indent=2).replace('\n', '\n  ')
+        f.write("""import { z } from 'zod';
 
 // Command configuration schema
-export const CommandConfigSchema = z.object({{
+export const CommandConfigSchema = z.object({
   type: z.string(),
   label: z.string(),
   template: z.string(),
   description: z.string().optional(),
   subType: z.enum(['path', 'community', 'route']).optional(),
   inputPlaceholder: z.string(),
-}});
+});
 
 export type CommandConfig = z.infer<typeof CommandConfigSchema>;
 
 // Define all available commands
-export const COMMANDS: Record<string, CommandConfig> = {json.dumps(commands_config['commands'], indent=2).replace('\n', '\n  ')};
-""")
+export const COMMANDS: Record<string, CommandConfig> = """ + commands_json + ";\n")
 
     with open(str(ts_config_dir / 'devices.ts'), 'w') as f:
-        f.write(f"""import {{ z }} from 'zod';
-import {{ COMMANDS, CommandConfig }} from './commands';
+        devices_json = json.dumps(devices_config['devices'], indent=2)
+        f.write("""import { z } from 'zod';
+import { COMMANDS, CommandConfig } from './commands';
 
 // Device configuration schema
-export const DeviceConfigSchema = z.object({{
+export const DeviceConfigSchema = z.object({
   host: z.string(),
   username: z.string(),
   password: z.string(),
@@ -95,38 +96,38 @@ export const DeviceConfigSchema = z.object({{
   description: z.string().optional(),
   enabled_commands: z.array(z.string()),
   location_id: z.string(),
-}});
+});
 
 export type DeviceConfig = z.infer<typeof DeviceConfigSchema>;
 
 // Example device configurations
-export const DEVICES: Record<string, DeviceConfig> = {json.dumps(devices_config['devices'], indent=2)};
+export const DEVICES: Record<string, DeviceConfig> = """ + devices_json + """;
 
 // Helper function to get available commands for a device
-export function getDeviceCommands(deviceHost: string): CommandConfig[] {{
+export function getDeviceCommands(deviceHost: string): CommandConfig[] {
   const device = DEVICES[deviceHost];
   if (!device) return [];
   
   return device.enabled_commands
     .map(cmdType => COMMANDS[cmdType])
     .filter((cmd): cmd is CommandConfig => cmd !== undefined);
-}}
+}
 
 // Validate device configurations
-Object.entries(DEVICES).forEach(([deviceHost, config]) => {{
-  try {{
+Object.entries(DEVICES).forEach(([deviceHost, config]) => {
+  try {
     DeviceConfigSchema.parse(config);
     // Validate that all enabled commands exist in COMMANDS
-    config.enabled_commands.forEach(cmdType => {{
-      if (!COMMANDS[cmdType]) {{
-        throw new Error(`Invalid command type "${{cmdType}}" for device "${{deviceHost}}"`);
-      }}
-    }});
-  }} catch (error) {{
-    console.error(`Invalid device configuration for "${{deviceHost}}":`, error);
+    config.enabled_commands.forEach(cmdType => {
+      if (!COMMANDS[cmdType]) {
+        throw new Error(`Invalid command type "${cmdType}" for device "${deviceHost}"`);
+      }
+    });
+  } catch (error) {
+    console.error(`Invalid device configuration for "${deviceHost}":`, error);
     process.exit(1);
-  }}
-}});
+  }
+});
 """)
 
     return commands_config['commands'], devices_config['devices']
