@@ -5,8 +5,10 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Install Python and required packages
-RUN apk add --no-cache python3 py3-pip && \
-    pip3 install --no-cache-dir netmiko pyyaml
+RUN apk add --no-cache \
+    python3 \
+    py3-netmiko \
+    py3-yaml
 
 # Copy application files
 COPY . .
