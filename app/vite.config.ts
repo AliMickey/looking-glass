@@ -1,23 +1,25 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
+import path from "path";
+import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(), // Keep the React plugin for Vite
-  ],
+  plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "client", "src"), // Adjusted for new structure
+      "@": path.resolve(__dirname, "./client/src"),
     },
   },
-  root: path.resolve(__dirname, "client"), // Updated root to the new location
+  root: "./client",
   build: {
-    outDir: path.resolve(__dirname, "dist", "public"), // Adjusted output directory
+    outDir: "../dist/public",
     emptyOutDir: true,
+  },
+  server: {
+    port: 3000,
+    host: "0.0.0.0",
   },
 });

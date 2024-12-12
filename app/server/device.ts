@@ -1,7 +1,6 @@
 import { spawn } from 'child_process';
-import { DEVICES, getDeviceCommands } from "./generated/devices";
-import { COMMANDS } from "./generated/commands";
-import type { DeviceConfig } from "@/lib/types";
+import { DEVICES, COMMANDS, getDeviceCommands } from "./config";
+import type { Device } from "./config";
 
 export async function executeCommand(deviceHost: string, command: string, target: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -11,7 +10,7 @@ export async function executeCommand(deviceHost: string, command: string, target
       return;
     }
 
-    const availableCommands = getDeviceCommands(deviceHost);
+    const availableCommands = getDeviceCommands(DEVICES, COMMANDS, deviceHost);
     const commandConfig = COMMANDS[command];
     
     if (!commandConfig || !availableCommands.some(cmd => cmd.type === command)) {

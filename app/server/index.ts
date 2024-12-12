@@ -11,9 +11,14 @@ import fs from "fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Config loading is now handled directly by TypeScript
-
+// Initialize Express app and load configurations
 const app = express();
+
+// Add basic error handling for configuration loading
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
 
 
 

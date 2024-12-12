@@ -2,9 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { LOCATIONS } from "./config";
 import { executeCommand } from "./device";
-import { loadConfig, getDeviceCommands } from "./config/loader";
+import { getConfig, getDeviceCommands } from "./config";
 
-const { commands, devices } = loadConfig();
+const { commands, devices } = getConfig();
 
 export function registerRoutes(app: Express): Server {
   const httpServer = createServer(app);
