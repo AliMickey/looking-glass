@@ -2,8 +2,8 @@
 branding:
   # Logo paths - should be accessible from public directory
   logo:
-    light: "/assets/logo-light.svg"  # Logo for light mode
-    dark: "/assets/logo-dark.svg"    # Logo for dark mode
+    light: "/app/assets/logo-light.svg"  # Logo for light mode
+    dark: "/app/assets/logo-dark.svg"    # Logo for dark mode
   
   # Header Configuration
   header:

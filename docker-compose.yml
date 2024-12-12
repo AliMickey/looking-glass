@@ -7,5 +7,6 @@ services:
       - "5000:5000"
     volumes:
       - ./server/config:/app/config:ro
+      - ./server/assets:/app/assets:ro
     environment:
       - NODE_ENV=production
