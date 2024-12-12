@@ -1,8 +1,50 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { watch } from "chokidar";
+import { spawn } from "child_process";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
+
+// Set up config file watcher
+const configDir = path.join(__dirname, "config");
+const watcher = watch([
+  path.join(configDir, "*.yaml"),
+  path.join(configDir, "*.yml")
+], {
+  persistent: true,
+  ignoreInitial: true
+});
+
+// Handler for YAML config changes
+watcher.on('change', (path) => {
+  log(`Config file changed: ${path}`);
+  
+  // Run config_loader.py to regenerate TypeScript files
+  const configLoader = spawn('python3', ['server/config_loader.py']);
+  
+  configLoader.stdout.on('data', (data) => {
+    log(`Config loader output: ${data}`);
+  });
+  
+  configLoader.stderr.on('data', (data) => {
+    log(`Config loader error: ${data}`);
+  });
+  
+  configLoader.on('close', (code) => {
+    if (code === 0) {
+      log('TypeScript configs regenerated successfully');
+    } else {
+      log(`Config loader exited with code ${code}`);
+    }
+  });
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

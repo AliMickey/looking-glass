@@ -113,6 +113,11 @@ export function getDeviceCommands(deviceHost: string): CommandConfig[] {
   if (!device) return [];
   
   return device.enabled_commands
+    .map(cmdType => COMMANDS[cmdType])
+    .filter((cmd): cmd is CommandConfig => cmd !== undefined);
+}
+""")
+
     # Generate UI config TypeScript file
     with open(str(ts_config_dir / 'ui.ts'), 'w') as f:
         ui_json = json.dumps(ui_config, indent=2)
@@ -147,11 +152,6 @@ export type UIConfig = z.infer<typeof UIConfigSchema>;
 
 // UI configurations loaded from YAML
 export const UI_CONFIG: UIConfig = """ + ui_json + ";")
-
-    .map(cmdType => COMMANDS[cmdType])
-    .filter((cmd): cmd is CommandConfig => cmd !== undefined);
-}
-""")
 
     return commands_config['commands'], devices_config['devices'], ui_config
 
