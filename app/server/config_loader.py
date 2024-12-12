@@ -25,6 +25,8 @@ class DeviceConfig(TypedDict):
     location_id: str
 
 def load_yaml_config(file_path: str) -> dict:
+    if not Path(file_path).exists():
+        raise FileNotFoundError(f"Configuration file not found: {file_path}")
     try:
         with open(file_path, 'r') as f:
             return yaml.safe_load(f)
@@ -50,53 +52,60 @@ def validate_device_config(device_config: dict, device_id: str, valid_commands: 
 
 def load_and_validate_configs() -> tuple[Dict[str, CommandConfig], Dict[str, DeviceConfig], dict]:
     # Load configurations
-    config_dir = Path(__file__).parent / 'config'
+    config_dir = Path('/app/config')
     if not config_dir.exists():
-        raise Exception(f"Config directory not found at {config_dir}")
+        raise FileNotFoundError(f"Config directory not found at {config_dir}")
 
     commands_config = load_yaml_config(str(config_dir / 'commands.yaml'))
     devices_config = load_yaml_config(str(config_dir / 'devices.yaml'))
     ui_config = load_yaml_config(str(config_dir / 'ui.yaml'))
 
     # Validate commands
+    if 'commands' not in commands_config:
+        raise ValueError("commands.yaml is missing the 'commands' key.")
     for cmd_id, cmd_config in commands_config['commands'].items():
         validate_command_config(cmd_config, cmd_id)
 
     # Validate devices
+    if 'devices' not in devices_config:
+        raise ValueError("devices.yaml is missing the 'devices' key.")
     valid_commands = list(commands_config['commands'].keys())
     for device_id, device_config in devices_config['devices'].items():
         validate_device_config(device_config, device_id, valid_commands)
 
-    # Write validated configs to TypeScript files
+    # Create generated directory
     generated_dir = Path(__file__).parent / 'generated'
     generated_dir.mkdir(exist_ok=True)
     
-    with open(str(generated_dir / 'commands.ts'), 'w') as f:
-        commands_json = json.dumps(commands_config['commands'], indent=2).replace('\n', '\n  ')
-        f.write("""import { z } from 'zod';
+    # Write commands.ts
+    with open(generated_dir / 'commands.ts', 'w') as f:
+        commands_json = json.dumps(commands_config['commands'], indent=2)
+        f.write(f"""import {{ z }} from 'zod';
 
 // Command configuration schema
-export const CommandConfigSchema = z.object({
+export const CommandConfigSchema = z.object({{
   type: z.string(),
   label: z.string(),
   template: z.string(),
   description: z.string().optional(),
   subType: z.enum(['path', 'community', 'route']).optional(),
   inputPlaceholder: z.string(),
-});
+}});
 
 export type CommandConfig = z.infer<typeof CommandConfigSchema>;
 
 // Commands loaded from YAML configuration
-export const COMMANDS: Record<string, CommandConfig> = """ + commands_json + ";\n")
+export const COMMANDS: Record<string, CommandConfig> = {commands_json};
+""")
 
-    with open(str(generated_dir / 'devices.ts'), 'w') as f:
+    # Write devices.ts
+    with open(generated_dir / 'devices.ts', 'w') as f:
         devices_json = json.dumps(devices_config['devices'], indent=2)
-        f.write("""import { z } from 'zod';
-import { COMMANDS, CommandConfig } from './commands';
+        f.write(f"""import {{ z }} from 'zod';
+import {{ COMMANDS, CommandConfig }} from './commands';
 
 // Device configuration schema
-export const DeviceConfigSchema = z.object({
+export const DeviceConfigSchema = z.object({{
   host: z.string(),
   username: z.string(),
   password: z.string(),
@@ -104,58 +113,59 @@ export const DeviceConfigSchema = z.object({
   description: z.string().optional(),
   enabled_commands: z.array(z.string()),
   location_id: z.string(),
-});
+}});
 
 export type DeviceConfig = z.infer<typeof DeviceConfigSchema>;
 
 // Device configurations loaded from YAML
-export const DEVICES: Record<string, DeviceConfig> = """ + devices_json + """;
+export const DEVICES: Record<string, DeviceConfig> = {devices_json};
 
 // Helper function to get available commands for a device
-export function getDeviceCommands(deviceHost: string): CommandConfig[] {
+export function getDeviceCommands(deviceHost: string): CommandConfig[] {{
   const device = DEVICES[deviceHost];
   if (!device) return [];
   
   return device.enabled_commands
     .map(cmdType => COMMANDS[cmdType])
     .filter((cmd): cmd is CommandConfig => cmd !== undefined);
-}
+}}
 """)
 
-    # Generate UI config TypeScript file
-    with open(str(generated_dir / 'ui.ts'), 'w') as f:
+    # Write ui.ts
+    with open(generated_dir / 'ui.ts', 'w') as f:
         ui_json = json.dumps(ui_config, indent=2)
-        f.write("""import { z } from 'zod';
+        f.write(f"""import {{ z }} from 'zod';
 
 // UI configuration schema
-export const UIConfigSchema = z.object({
-  branding: z.object({
-    logo: z.object({
+export const UIConfigSchema = z.object({{
+  branding: z.object({{
+    logo: z.object({{
       light: z.string(),
       dark: z.string(),
-    }),
-    header: z.object({
+    }}),
+    header: z.object({{
       title: z.string(),
       subtitle: z.string().optional(),
-    }),
-    footer: z.object({
+    }}),
+    footer: z.object({{
       text: z.string(),
-      links: z.array(z.object({
+      links: z.array(z.object({{
         label: z.string(),
         url: z.string(),
-      })),
-      contact: z.object({
+      }})),
+      contact: z.object({{
         email: z.string(),
         phone: z.string(),
-      }),
-    }),
-  }),
-});
+      }}),
+    }}),
+  }}),
+}});
 
 export type UIConfig = z.infer<typeof UIConfigSchema>;
 
 // UI configurations loaded from YAML
-export const UI_CONFIG: UIConfig = """ + ui_json + ";")
+export const UI_CONFIG: UIConfig = {ui_json};
+""")
 
     return commands_config['commands'], devices_config['devices'], ui_config
 

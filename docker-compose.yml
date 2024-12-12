@@ -1,11 +1,8 @@
-
 services:
   app:
     build: .
     ports:
       - "5000:5000"
     volumes:
-      - ./server/config:/app/server/config:ro
-      - ./server/assets:/app/server/assets:ro
-      - ./server/generated:/app/server/generated
+      - ./config:/app/config:ro
     restart: unless-stopped

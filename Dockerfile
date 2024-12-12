@@ -2,24 +2,15 @@ FROM node:20-bullseye
 
 WORKDIR /app
 
-# Combine apt-get and pip installations into a single layer
 RUN apt-get update && \
     apt-get install -y python3 python3-pip && \
-    pip3 install --no-cache-dir netmiko pyyaml && \
+    pip3 install pyyaml && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm install
+COPY app /app
 
-# Copy application files and build
-COPY . .
-RUN mkdir -p /app/server/generated && \
-    chmod 777 /app/server/generated && \
-    python3 server/config_loader.py && \
-    npm run build
+RUN npm install && npm run build
 
-ENV PORT=5000
-EXPOSE $PORT
+EXPOSE 5000
 
-CMD ["sh", "-c", "python3 /app/server/config_loader.py && node /app/dist/index.js"]
+CMD ["sh", "-c", "python3 server/config_loader.py && node dist/index.js"]
