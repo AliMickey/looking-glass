@@ -1,22 +1,21 @@
 {
-  "include": ["app/client/src/**/*", "app/db/**/*", "app/server/**/*"],
-  "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
+  "include": ["client/src/**/*", "server/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"],
   "compilerOptions": {
-    "incremental": true,
-    "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
-    "noEmit": true,
+    "target": "ES2020",
     "module": "ESNext",
+    "moduleResolution": "bundler",
     "strict": true,
-    "lib": ["esnext", "dom", "dom.iterable"],
     "jsx": "preserve",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "allowImportingTsExtensions": true,
-    "moduleResolution": "bundler",
-    "baseUrl": "app", // Updated base URL
-    "types": ["node", "vite/client"],
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["client/src/*"] // Adjusted to align with `baseUrl`
+      "@/*": ["client/src/*"]
     }
   }
 }
