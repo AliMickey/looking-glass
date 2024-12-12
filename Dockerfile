@@ -1,19 +1,23 @@
-# Build stage
-FROM node:20-bullseye-slim as build
-WORKDIR /app
-COPY app/package*.json ./
-RUN npm install
-COPY app .
-RUN npm run build
-
-# Production stage
 FROM node:20-bullseye-slim
+
 # Create non-root user
 RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Set working directory
 WORKDIR /app
-COPY --from=build /app/dist ./dist
+
+# Copy package files
 COPY app/package*.json ./
-RUN npm ci --only=production && chown -R appuser:appuser /app
+
+# Install dependencies
+RUN npm ci
+
+# Copy source files
+COPY app/ ./
+
+# Build application and set permissions
+RUN npm run build && \
+    chown -R appuser:appuser /app
 
 # Switch to non-root user
 USER appuser
@@ -25,4 +29,4 @@ ENV NODE_ENV=production
 EXPOSE 5000
 
 # Start application
-CMD ["node", "dist/index.js"]
+CMD ["node", "./dist/index.js"]
