@@ -1,6 +1,15 @@
 {
-  "variant": "professional",
-  "primary": "hsl(195, 85%, 41%)",
+  "name": "network-monitor",
   "appearance": "dark",
-  "radius": 0.75
+  "variant": "professional",
+  "radius": "0.5",
+  "primary": "hsl(195, 85%, 41%)",
+  "secondary": "hsl(240 3.7% 15.9%)",
+  "background": "hsl(240 10% 3.9%)",
+  "foreground": "hsl(0 0% 98%)",
+  "muted": "hsl(240 3.7% 15.9%)",
+  "accent": "hsl(240 3.7% 15.9%)",
+  "destructive": "hsl(0 62.8% 30.6%)",
+  "border": "hsl(240 3.7% 15.9%)",
+  "input": "hsl(240 3.7% 15.9%)"
 }
