@@ -69,23 +69,7 @@ const runConfigLoader = () => {
 
 const app = express();
 
-// Set up config file watcher
-const configDir = path.join(__dirname, "config");
-const watcher = watch([
-  path.join(configDir, "*.yaml"),
-  path.join(configDir, "*.yml")
-], {
-  persistent: true,
-  ignoreInitial: true
-});
 
-// Handler for YAML config changes
-watcher.on('change', (filePath) => {
-  log(`Config file changed: ${filePath}`);
-  runConfigLoader().catch(error => {
-    log(`Failed to regenerate configs: ${error.message}`);
-  });
-});
 
 // Initialize middleware
 app.use(express.json());
