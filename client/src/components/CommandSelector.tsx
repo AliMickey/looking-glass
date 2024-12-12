@@ -18,18 +18,24 @@ const QUERY_TYPES = {
   "bgp": "Enter IP prefix or ASN"
 };
 
+import { Button } from "@/components/ui/button";
+
 interface CommandSelectorProps {
   selectedCommand: Command | null;
   onCommandSelect: (command: Command) => void;
   queryTarget: string;
   onQueryTargetChange: (value: string) => void;
+  onSubmit: () => void;
+  isLoading: boolean;
 }
 
 export default function CommandSelector({
   selectedCommand,
   onCommandSelect,
   queryTarget,
-  onQueryTargetChange
+  onQueryTargetChange,
+  onSubmit,
+  isLoading
 }: CommandSelectorProps) {
   return (
     <div className="flex flex-col md:flex-row gap-4">
@@ -58,6 +64,13 @@ export default function CommandSelector({
         onChange={(e) => onQueryTargetChange(e.target.value)}
         className="flex-1"
       />
+
+      <Button 
+        onClick={onSubmit}
+        disabled={!selectedCommand || !queryTarget || isLoading}
+      >
+        {isLoading ? "Running..." : "Execute"}
+      </Button>
     </div>
   );
 }

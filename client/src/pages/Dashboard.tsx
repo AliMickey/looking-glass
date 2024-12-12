@@ -15,10 +15,16 @@ export default function Dashboard() {
     queryKey: ['/api/locations'],
   });
 
+  const [shouldExecute, setShouldExecute] = useState(false);
+
   const { data, isLoading } = useQuery<{ output: string }>({
     queryKey: ['/api/execute', selectedLocation?.id, selectedCommand?.type, queryTarget],
-    enabled: !!(selectedLocation && selectedCommand && queryTarget),
+    enabled: !!(selectedLocation && selectedCommand && queryTarget && shouldExecute),
   });
+
+  const handleExecute = () => {
+    setShouldExecute(true);
+  };
 
   const output = data?.output;
 
@@ -45,9 +51,17 @@ export default function Dashboard() {
           <Card className="p-6 space-y-4">
             <CommandSelector
               selectedCommand={selectedCommand}
-              onCommandSelect={setSelectedCommand}
+              onCommandSelect={(cmd) => {
+                setSelectedCommand(cmd);
+                setShouldExecute(false);
+              }}
               queryTarget={queryTarget}
-              onQueryTargetChange={setQueryTarget}
+              onQueryTargetChange={(val) => {
+                setQueryTarget(val);
+                setShouldExecute(false);
+              }}
+              onSubmit={handleExecute}
+              isLoading={isLoading}
             />
 
             <CommandOutput 
