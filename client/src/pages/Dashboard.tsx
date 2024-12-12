@@ -17,7 +17,7 @@ export default function Dashboard() {
 
   const [shouldExecute, setShouldExecute] = useState(false);
 
-  const { data, isLoading } = useQuery<{ output: string }>({
+  const { data, isLoading, error } = useQuery<{ output: string; error?: string }>({
     queryKey: ['/api/execute', selectedLocation?.id, selectedCommand?.type, queryTarget],
     enabled: !!(selectedLocation && selectedCommand && queryTarget && shouldExecute),
   });
@@ -27,6 +27,7 @@ export default function Dashboard() {
   };
 
   const output = data?.output;
+  const errorMessage = error instanceof Error ? error.message : data?.error;
 
   return (
     <div className="min-h-screen bg-background p-8">
@@ -66,6 +67,7 @@ export default function Dashboard() {
 
             <CommandOutput 
               output={output}
+              error={errorMessage}
               isLoading={isLoading}
             />
           </Card>
