@@ -50,8 +50,8 @@ export default function CommandSelector({
   return (
     <div className="flex flex-col md:flex-row gap-4">
       <Select
-        value={selectedCommand?.type || ""}
-        onValueChange={(value: string) => {
+        value={selectedCommand?.type}
+        onValueChange={(value) => {
           const command = commands.find(c => c.type === value);
           if (command) onCommandSelect(command);
         }}
