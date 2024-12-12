@@ -12,7 +12,7 @@ export const CommandConfigSchema = z.object({
 
 export type CommandConfig = z.infer<typeof CommandConfigSchema>;
 
-// Define all available commands
+// Commands loaded from YAML configuration
 export const COMMANDS: Record<string, CommandConfig> = {
     "ping": {
       "type": "ping",

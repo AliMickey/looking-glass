@@ -79,7 +79,7 @@ export const CommandConfigSchema = z.object({
 
 export type CommandConfig = z.infer<typeof CommandConfigSchema>;
 
-// Define all available commands
+// Commands loaded from YAML configuration
 export const COMMANDS: Record<string, CommandConfig> = """ + commands_json + ";\n")
 
     with open(str(ts_config_dir / 'devices.ts'), 'w') as f:
@@ -100,7 +100,7 @@ export const DeviceConfigSchema = z.object({
 
 export type DeviceConfig = z.infer<typeof DeviceConfigSchema>;
 
-// Example device configurations
+// Device configurations loaded from YAML
 export const DEVICES: Record<string, DeviceConfig> = """ + devices_json + """;
 
 // Helper function to get available commands for a device
@@ -112,22 +112,6 @@ export function getDeviceCommands(deviceHost: string): CommandConfig[] {
     .map(cmdType => COMMANDS[cmdType])
     .filter((cmd): cmd is CommandConfig => cmd !== undefined);
 }
-
-// Validate device configurations
-Object.entries(DEVICES).forEach(([deviceHost, config]) => {
-  try {
-    DeviceConfigSchema.parse(config);
-    // Validate that all enabled commands exist in COMMANDS
-    config.enabled_commands.forEach(cmdType => {
-      if (!COMMANDS[cmdType]) {
-        throw new Error(`Invalid command type "${cmdType}" for device "${deviceHost}"`);
-      }
-    });
-  } catch (error) {
-    console.error(`Invalid device configuration for "${deviceHost}":`, error);
-    process.exit(1);
-  }
-});
 """)
 
     return commands_config['commands'], devices_config['devices']

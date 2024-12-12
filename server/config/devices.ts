@@ -14,7 +14,7 @@ export const DeviceConfigSchema = z.object({
 
 export type DeviceConfig = z.infer<typeof DeviceConfigSchema>;
 
-// Example device configurations
+// Device configurations loaded from YAML
 export const DEVICES: Record<string, DeviceConfig> = {
   "router1.chi": {
     "host": "192.168.1.1",
@@ -54,19 +54,3 @@ export function getDeviceCommands(deviceHost: string): CommandConfig[] {
     .map(cmdType => COMMANDS[cmdType])
     .filter((cmd): cmd is CommandConfig => cmd !== undefined);
 }
-
-// Validate device configurations
-Object.entries(DEVICES).forEach(([deviceHost, config]) => {
-  try {
-    DeviceConfigSchema.parse(config);
-    // Validate that all enabled commands exist in COMMANDS
-    config.enabled_commands.forEach(cmdType => {
-      if (!COMMANDS[cmdType]) {
-        throw new Error(`Invalid command type "${cmdType}" for device "${deviceHost}"`);
-      }
-    });
-  } catch (error) {
-    console.error(`Invalid device configuration for "${deviceHost}":`, error);
-    process.exit(1);
-  }
-});
