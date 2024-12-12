@@ -68,10 +68,15 @@ app.use((req, res, next) => {
     const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
     const HOST = process.env.HOST || "0.0.0.0";
 
-    server.listen(PORT, HOST, () => {
-      log(`Server running at http://${HOST}:${PORT}`);
-      log(`Environment: ${app.get("env")}`);
-    });
+    try {
+      server.listen(PORT, HOST, () => {
+        log(`Server running at http://${HOST}:${PORT}`);
+        log(`Environment: ${app.get("env")}`);
+      });
+    } catch (error) {
+      log(`Failed to start server: ${error instanceof Error ? error.message : String(error)}`);
+      process.exit(1);
+    }
   } catch (error) {
     log('Failed to start server:', error instanceof Error ? error.message : String(error));
     console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace available');

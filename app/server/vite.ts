@@ -22,57 +22,62 @@ export function log(message: string, source = "express") {
 }
 
 export async function setupVite(app: Express, server: Server) {
-  const vite = await createViteServer({
-    ...viteConfig,
-    configFile: false,
-    customLogger: {
-      ...viteLogger,
-      error: (msg, options) => {
-        if (
-          msg.includes("[TypeScript] Found 0 errors. Watching for file changes")
-        ) {
-          log("no errors found", "tsc");
-          return;
-        }
+  try {
+    const vite = await createViteServer({
+      ...viteConfig,
+      configFile: false,
+      customLogger: {
+        ...viteLogger,
+        error: (msg, options) => {
+          if (msg.includes("[TypeScript] Found 0 errors. Watching for file changes")) {
+            log("no errors found", "tsc");
+            return;
+          }
 
-        if (msg.includes("[TypeScript] ")) {
-          const [errors, summary] = msg.split("[TypeScript] ", 2);
-          log(`${summary} ${errors}\u001b[0m`, "tsc");
-          return;
-        } else {
+          if (msg.includes("[TypeScript] ")) {
+            const [errors, summary] = msg.split("[TypeScript] ", 2);
+            log(`${summary} ${errors}\u001b[0m`, "tsc");
+            return;
+          }
+          
+          log(`Vite error: ${msg}`, "error");
           viteLogger.error(msg, options);
-          process.exit(1);
-        }
+        },
       },
-    },
-    server: {
-      middlewareMode: true,
-      hmr: { server },
-    },
-    appType: "custom",
-  });
+      server: {
+        middlewareMode: true,
+        hmr: { server },
+        host: process.env.HOST || '0.0.0.0',
+        port: parseInt(process.env.PORT || '5000', 10),
+      },
+      appType: "custom",
+    });
 
-  app.use(vite.middlewares);
-  app.use("*", async (req, res, next) => {
-    const url = req.originalUrl;
+    app.use(vite.middlewares);
+    app.use("*", async (req, res, next) => {
+      const url = req.originalUrl;
 
-    try {
-      const clientTemplate = path.resolve(
-        __dirname,
-        "..",
-        "client",
-        "index.html",
-      );
+      try {
+        const clientTemplate = path.resolve(
+          __dirname,
+          "..",
+          "client",
+          "index.html",
+        );
 
-      // always reload the index.html file from disk incase it changes
-      const template = await fs.promises.readFile(clientTemplate, "utf-8");
-      const page = await vite.transformIndexHtml(url, template);
-      res.status(200).set({ "Content-Type": "text/html" }).end(page);
-    } catch (e) {
-      vite.ssrFixStacktrace(e as Error);
-      next(e);
-    }
-  });
+        // always reload the index.html file from disk incase it changes
+        const template = await fs.promises.readFile(clientTemplate, "utf-8");
+        const page = await vite.transformIndexHtml(url, template);
+        res.status(200).set({ "Content-Type": "text/html" }).end(page);
+      } catch (e) {
+        vite.ssrFixStacktrace(e as Error);
+        next(e);
+      }
+    });
+  } catch (error) {
+    log(`Failed to setup Vite: ${error instanceof Error ? error.message : String(error)}`, "error");
+    throw error;
+  }
 }
 
 export function serveStatic(app: Express) {

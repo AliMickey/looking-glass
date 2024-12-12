@@ -3,10 +3,17 @@ FROM node:20-bullseye-slim AS builder
 # Set working directory
 WORKDIR /app
 
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy package files first to leverage Docker cache
 COPY app/package*.json ./
 
-# Install dependencies
+# Install dependencies with exact versions
 RUN npm ci
 
 # Copy the rest of the application code
@@ -24,10 +31,16 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 # Set working directory
 WORKDIR /app
 
-# Copy only the built artifacts and necessary files
+# Copy only the built artifacts and production dependencies
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
+
+# Install only production dependencies
+RUN npm ci --only=production && \
+    npm cache clean --force
+
+# Copy static assets if any
+COPY --from=builder /app/client/public ./dist/client/public
 
 # Set permissions
 RUN chown -R appuser:appuser /app
@@ -43,9 +56,9 @@ ENV NODE_ENV=production \
 # Expose port
 EXPOSE 5000
 
-# Health check
+# Health check with proper timeout and interval
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5000/ || exit 1
+    CMD curl -f http://localhost:5000/health || exit 1
 
-# Start application
-CMD ["node", "./dist/server/index.js"]
+# Start application with proper signal handling
+CMD ["node", "--unhandled-rejections=strict", "./dist/server/index.js"]

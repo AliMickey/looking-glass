@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "NODE_ENV=development tsx watch server/index.ts",
     "build": "npm run clean && npm run build:client && npm run build:server",
-    "build:client": "vite build",
-    "build:server": "esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outfile=dist/server/index.js",
+    "build:client": "tsc && vite build",
+    "build:server": "tsc && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outfile=dist/server/index.js",
     "start": "NODE_ENV=production node dist/server/index.js",
     "clean": "rm -rf dist",
     "check": "tsc --noEmit",
