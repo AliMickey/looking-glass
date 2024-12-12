@@ -65,9 +65,10 @@ def load_and_validate_configs() -> tuple[Dict[str, CommandConfig], Dict[str, Dev
         validate_device_config(device_config, device_id, valid_commands)
 
     # Write validated configs to TypeScript files
-    ts_config_dir = Path(__file__).parent / 'config'
+    generated_dir = Path(__file__).parent / 'generated'
+    generated_dir.mkdir(exist_ok=True)
     
-    with open(str(ts_config_dir / 'commands.ts'), 'w') as f:
+    with open(str(generated_dir / 'commands.ts'), 'w') as f:
         commands_json = json.dumps(commands_config['commands'], indent=2).replace('\n', '\n  ')
         f.write("""import { z } from 'zod';
 
@@ -86,7 +87,7 @@ export type CommandConfig = z.infer<typeof CommandConfigSchema>;
 // Commands loaded from YAML configuration
 export const COMMANDS: Record<string, CommandConfig> = """ + commands_json + ";\n")
 
-    with open(str(ts_config_dir / 'devices.ts'), 'w') as f:
+    with open(str(generated_dir / 'devices.ts'), 'w') as f:
         devices_json = json.dumps(devices_config['devices'], indent=2)
         f.write("""import { z } from 'zod';
 import { COMMANDS, CommandConfig } from './commands';
@@ -119,7 +120,7 @@ export function getDeviceCommands(deviceHost: string): CommandConfig[] {
 """)
 
     # Generate UI config TypeScript file
-    with open(str(ts_config_dir / 'ui.ts'), 'w') as f:
+    with open(str(generated_dir / 'ui.ts'), 'w') as f:
         ui_json = json.dumps(ui_config, indent=2)
         f.write("""import { z } from 'zod';
 
