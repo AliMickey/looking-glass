@@ -2,7 +2,11 @@ version: '3.8'
 
 services:
   app:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PORT=${PORT:-5000}
     ports:
       - "${PORT:-5000}:${PORT:-5000}"
     environment:
@@ -10,9 +14,12 @@ services:
       - PORT=${PORT:-5000}
     volumes:
       - ./server/config:/app/config:ro
+      - ./theme.json:/app/theme.json:ro
+      - ./client/theme.json:/app/client/theme.json:ro
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:${PORT:-5000}/api/locations"]
-      interval: 10s
-      timeout: 5s
+      interval: 30s
+      timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 30s

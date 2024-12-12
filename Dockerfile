@@ -1,13 +1,19 @@
 # Build stage
 FROM node:20-alpine as builder
 WORKDIR /app
+
+# Copy configuration files first
 COPY package*.json ./
-COPY client ./client
-COPY server ./server
+COPY tsconfig.json ./
 COPY vite.config.ts ./
 COPY tailwind.config.ts ./
 COPY postcss.config.js ./
-COPY tsconfig.json ./
+COPY theme.json ./
+COPY client/theme.json ./client/
+COPY client ./client
+COPY server ./server
+
+# Install dependencies and build
 RUN npm install
 RUN npm run build
 
@@ -29,6 +35,8 @@ RUN pip install --no-cache-dir netmiko pyyaml
 # Copy built assets and config
 COPY --from=builder /app/dist ./dist
 COPY server/config ./config
+COPY theme.json ./
+COPY client/theme.json ./client/
 
 # Install production Node.js dependencies
 COPY package*.json ./
