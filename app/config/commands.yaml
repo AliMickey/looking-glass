@@ -1,0 +1,13 @@
+commands:
+  ping:
+    type: "ping"
+    label: "Ping"
+    template: "ping {target}"
+    description: "Send ICMP echo request"
+    inputPlaceholder: "Enter IP or hostname"
+  traceroute:
+    type: "traceroute"
+    label: "Traceroute"
+    template: "traceroute {target}"
+    description: "Trace network path"
+    inputPlaceholder: "Enter IP or hostname"

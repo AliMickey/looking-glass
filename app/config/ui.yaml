@@ -1,0 +1,17 @@
+branding:
+  logo:
+    light: "/assets/logo-light.svg"
+    dark: "/assets/logo-dark.svg"
+  header:
+    title: "Network Monitor"
+    subtitle: "Infrastructure Monitoring Tool"
+  footer:
+    text: "© 2024 Network Monitor"
+    links:
+      - label: "Documentation"
+        url: "/docs"
+      - label: "Support"
+        url: "/support"
+    contact:
+      email: "support@example.com"
+      phone: "+1 (555) 123-4567"

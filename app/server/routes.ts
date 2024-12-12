@@ -2,7 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { LOCATIONS } from "./config";
 import { executeCommand } from "./device";
-import { getDeviceCommands, DEVICES } from "./generated/devices";
+import { loadConfig, getDeviceCommands } from "./config/loader";
+
+const { commands, devices } = loadConfig();
 
 export function registerRoutes(app: Express): Server {
   const httpServer = createServer(app);
@@ -12,7 +14,7 @@ export function registerRoutes(app: Express): Server {
   });
   app.get("/api/device/:deviceHost/commands", (req, res) => {
     const { deviceHost } = req.params;
-    const commands = getDeviceCommands(deviceHost);
+    const availableCommands = getDeviceCommands(devices, commands, deviceHost);
     res.json(commands);
   });
 
