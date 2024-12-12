@@ -44,7 +44,6 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto space-y-12">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold text-primary tracking-tight">Looking Glass</h1>
-          <div className="text-sm text-muted-foreground">Location</div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
