@@ -4,11 +4,16 @@ FROM node:20-alpine
 # Set working directory
 WORKDIR /app
 
-# Install Python and required packages
-RUN apk add --no-cache \
-    python3 \
-    py3-netmiko \
-    py3-yaml
+# Install Python and create virtual environment
+RUN apk add --no-cache python3 py3-pip python3-dev build-base && \
+    python3 -m venv /app/venv
+
+# Set virtual environment path
+ENV PATH="/app/venv/bin:$PATH"
+
+# Install Python packages in virtual environment
+RUN . /app/venv/bin/activate && \
+    pip install --no-cache-dir netmiko pyyaml
 
 # Copy application files
 COPY . .
