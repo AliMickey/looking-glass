@@ -2,21 +2,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Command } from "@/lib/types";
 
-const COMMANDS: Command[] = [
-  { type: "ping", label: "Ping" },
-  { type: "traceroute", label: "Traceroute" },
-  { type: "bgp_path", label: "BGP AS Path", subType: "path" },
-  { type: "bgp_community", label: "BGP Community", subType: "community" },
-  { type: "bgp_route", label: "BGP Route", subType: "route" },
-  { type: "mtr", label: "MTR" }
-];
+import { useQuery } from '@tanstack/react-query';
 
-const QUERY_TYPES = {
-  "ping": "Enter IP or hostname",
-  "traceroute": "Enter IP or hostname",
-  "mtr": "Enter IP or hostname",
-  "bgp": "Enter IP prefix or ASN"
-};
+async function fetchAvailableCommands(deviceHost: string): Promise<Command[]> {
+  const response = await fetch(`/api/device/${deviceHost}/commands`);
+  if (!response.ok) throw new Error('Failed to fetch commands');
+  return response.json();
+}
+
+interface CommandSelectorProps {
+  deviceHost: string;
+  selectedCommand: Command | null;
+  onCommandSelect: (command: Command) => void;
+  queryTarget: string;
+  onQueryTargetChange: (value: string) => void;
+  onSubmit: () => void;
+  isLoading: boolean;
+}
 
 import { Button } from "@/components/ui/button";
 

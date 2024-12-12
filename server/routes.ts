@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { LOCATIONS } from "./config";
 import { executeCommand } from "./device";
+import { getDeviceCommands } from "./config/devices";
 
 export function registerRoutes(app: Express): Server {
   const httpServer = createServer(app);
@@ -9,6 +10,12 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/locations", (_req, res) => {
     res.json(LOCATIONS);
   });
+  app.get("/api/device/:deviceHost/commands", (req, res) => {
+    const { deviceHost } = req.params;
+    const commands = getDeviceCommands(deviceHost);
+    res.json(commands);
+  });
+
 
   app.get("/api/execute", async (req, res) => {
     const { locationId, command, target } = req.query;

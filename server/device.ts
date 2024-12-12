@@ -1,8 +1,7 @@
 import { spawn } from 'child_process';
-import { DEVICES } from "./config";
+import { DEVICES, getDeviceCommands } from "./config/devices";
+import { COMMANDS } from "./config/commands";
 import type { DeviceConfig } from "@/lib/types";
-
-const VALID_COMMANDS = ['ping', 'traceroute', 'mtr', 'bgp'];
 
 export async function executeCommand(deviceHost: string, command: string, target: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -12,8 +11,11 @@ export async function executeCommand(deviceHost: string, command: string, target
       return;
     }
 
-    if (!VALID_COMMANDS.includes(command)) {
-      reject(new Error(`Invalid command: ${command}`));
+    const availableCommands = getDeviceCommands(deviceHost);
+    const commandConfig = COMMANDS[command];
+    
+    if (!commandConfig || !availableCommands.some(cmd => cmd.type === command)) {
+      reject(new Error(`Command ${command} is not available for device ${deviceHost}`));
       return;
     }
 
@@ -50,7 +52,10 @@ export async function executeCommand(deviceHost: string, command: string, target
 
     // Send device configuration and command to Python script
     const input = JSON.stringify({
-      device_config: device,
+      device_config: {
+        ...device,
+        command_template: COMMANDS[command].template
+      },
       command,
       target
     });

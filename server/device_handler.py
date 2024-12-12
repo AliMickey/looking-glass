@@ -15,21 +15,13 @@ def execute_command(device_config, command, target):
         if isinstance(connection, dict) and "error" in connection:
             return json.dumps({"error": connection["error"]})
             
-        command_templates = {
-            "ping": f"ping {target}",
-            "traceroute": f"traceroute {target}",
-            "mtr": f"mtr {target}",
-            "bgp_path": f"show ip bgp paths {target}",
-            "bgp_community": f"show ip bgp community {target}",
-            "bgp_route": f"show ip bgp {target}"
-        }
-        
-        command_type = command.split('_')[0] if '_' in command else command
-        if command_type not in command_templates and command not in command_templates:
-            return json.dumps({"error": f"Invalid command: {command}"})
+        # Use the command template from the input data
+        command_template = device_config.get('command_template')
+        if not command_template:
+            return json.dumps({"error": "Command template not provided"})
             
         try:
-            cmd = command_templates.get(command) or command_templates.get(command_type)
+            cmd = command_template.format(target=target)
             output = connection.send_command(cmd, read_timeout=30)
             if not output.strip():
                 return json.dumps({"error": "Command returned no output"})
