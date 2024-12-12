@@ -1,3 +1,4 @@
+
 services:
   app:
     build: .
@@ -6,4 +7,5 @@ services:
     volumes:
       - ./server/config:/app/server/config:ro
       - ./server/assets:/app/server/assets:ro
+      - ./server/generated:/app/server/generated
     restart: unless-stopped
