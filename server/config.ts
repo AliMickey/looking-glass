@@ -9,21 +9,16 @@ export const LOCATIONS = [
     deviceHost: "router1.chi"
   },
   {
-    id: "lax",
-    city: "Los Angeles, CA", 
-    code: "US-LAX",
-    shortCode: "LC",
-    deviceHost: "router1.lax"
-  },
-  {
     id: "nyc",
     city: "New York, NY",
     code: "US-NYC", 
     shortCode: "NN",
-    deviceHost: "router1.nyc"
+    deviceHost: "router2.nyc"
   }
 ];
 
+// Device configurations are now loaded from YAML through config_loader.py
+// This is kept for type compatibility, actual device configs come from devices.ts
 export const DEVICES: Record<string, DeviceConfig> = {
   "router1.chi": {
     host: "192.168.1.1",
@@ -31,14 +26,8 @@ export const DEVICES: Record<string, DeviceConfig> = {
     password: process.env.DEVICE_PASSWORD || "admin",
     device_type: "cisco_ios"
   },
-  "router1.lax": {
+  "router2.nyc": {
     host: "192.168.1.2",
-    username: "admin", 
-    password: process.env.DEVICE_PASSWORD || "admin",
-    device_type: "cisco_ios"
-  },
-  "router1.nyc": {
-    host: "192.168.1.3",
     username: "admin",
     password: process.env.DEVICE_PASSWORD || "admin", 
     device_type: "cisco_ios"
