@@ -51,6 +51,9 @@ def validate_device_config(device_config: dict, device_id: str, valid_commands: 
 def load_and_validate_configs() -> tuple[Dict[str, CommandConfig], Dict[str, DeviceConfig], dict]:
     # Load configurations
     config_dir = Path(__file__).parent / 'config'
+    if not config_dir.exists():
+        raise Exception(f"Config directory not found at {config_dir}")
+
     commands_config = load_yaml_config(str(config_dir / 'commands.yaml'))
     devices_config = load_yaml_config(str(config_dir / 'devices.yaml'))
     ui_config = load_yaml_config(str(config_dir / 'ui.yaml'))

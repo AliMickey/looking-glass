@@ -6,7 +6,8 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./server/config:/app/config:ro
-      - ./server/assets:/app/assets:ro
+      - ./server/config:/app/server/config:ro
+      - ./server/assets:/app/server/assets:ro
     environment:
       - NODE_ENV=production
+      - PORT=5000
