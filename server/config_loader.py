@@ -12,6 +12,9 @@ class CommandConfig(TypedDict):
     subType: Optional[str]
     inputPlaceholder: str
 
+class UIConfig(TypedDict):
+    branding: Dict[str, Dict[str, str]]
+
 class DeviceConfig(TypedDict):
     host: str
     username: str
@@ -45,11 +48,12 @@ def validate_device_config(device_config: dict, device_id: str, valid_commands: 
         if cmd not in valid_commands:
             raise ValueError(f"Device '{device_id}' has invalid command: {cmd}")
 
-def load_and_validate_configs() -> tuple[Dict[str, CommandConfig], Dict[str, DeviceConfig]]:
+def load_and_validate_configs() -> tuple[Dict[str, CommandConfig], Dict[str, DeviceConfig], dict]:
     # Load configurations
     config_dir = Path(__file__).parent / 'config'
     commands_config = load_yaml_config(str(config_dir / 'commands.yaml'))
     devices_config = load_yaml_config(str(config_dir / 'devices.yaml'))
+    ui_config = load_yaml_config(str(config_dir / 'ui.yaml'))
 
     # Validate commands
     for cmd_id, cmd_config in commands_config['commands'].items():
@@ -109,17 +113,55 @@ export function getDeviceCommands(deviceHost: string): CommandConfig[] {
   if (!device) return [];
   
   return device.enabled_commands
+    # Generate UI config TypeScript file
+    with open(str(ts_config_dir / 'ui.ts'), 'w') as f:
+        ui_json = json.dumps(ui_config, indent=2)
+        f.write("""import { z } from 'zod';
+
+// UI configuration schema
+export const UIConfigSchema = z.object({
+  branding: z.object({
+    logo: z.object({
+      light: z.string(),
+      dark: z.string(),
+    }),
+    header: z.object({
+      title: z.string(),
+      subtitle: z.string().optional(),
+    }),
+    footer: z.object({
+      text: z.string(),
+      links: z.array(z.object({
+        label: z.string(),
+        url: z.string(),
+      })),
+      contact: z.object({
+        email: z.string(),
+        phone: z.string(),
+      }),
+    }),
+  }),
+});
+
+export type UIConfig = z.infer<typeof UIConfigSchema>;
+
+// UI configurations loaded from YAML
+export const UI_CONFIG: UIConfig = """ + ui_json + ";")
+
     .map(cmdType => COMMANDS[cmdType])
     .filter((cmd): cmd is CommandConfig => cmd !== undefined);
 }
 """)
 
-    return commands_config['commands'], devices_config['devices']
+    return commands_config['commands'], devices_config['devices'], ui_config
 
 if __name__ == "__main__":
     try:
-        commands, devices = load_and_validate_configs()
+        commands, devices, ui = load_and_validate_configs()
         print("Configuration loaded and validated successfully!")
+        print("Loaded UI configuration with the following sections:")
+        print(f"- Logo configurations: {len(ui['branding']['logo'])}")
+        print(f"- Footer links: {len(ui['branding']['footer']['links'])}")
     except Exception as e:
         print(f"Configuration error: {str(e)}")
         exit(1)
