@@ -14,7 +14,9 @@ RUN npm install
 
 # Copy application files and build
 COPY . .
-RUN python3 server/config_loader.py && \
+RUN mkdir -p /app/server/generated && \
+    chmod 777 /app/server/generated && \
+    python3 server/config_loader.py && \
     npm run build
 
 ENV PORT=5000
