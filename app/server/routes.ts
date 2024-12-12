@@ -15,7 +15,7 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/device/:deviceHost/commands", (req, res) => {
     const { deviceHost } = req.params;
     const availableCommands = getDeviceCommands(devices, commands, deviceHost);
-    res.json(commands);
+    res.json(availableCommands);
   });
 
   app.get("/api/execute", async (req, res) => {
