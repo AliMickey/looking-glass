@@ -11,9 +11,16 @@ import fs from "fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Create generated directory if it doesn't exist
+// Create or clean generated directory
 const generatedDir = path.join(__dirname, "generated");
-if (!fs.existsSync(generatedDir)) {
+if (fs.existsSync(generatedDir)) {
+  // Clean up old generated files
+  fs.readdirSync(generatedDir).forEach(file => {
+    if (file.endsWith('.ts')) {
+      fs.unlinkSync(path.join(generatedDir, file));
+    }
+  });
+} else {
   fs.mkdirSync(generatedDir, { recursive: true });
 }
 
@@ -21,21 +28,38 @@ if (!fs.existsSync(generatedDir)) {
 const runConfigLoader = () => {
   return new Promise<void>((resolve, reject) => {
     const configLoader = spawn('python3', ['server/config_loader.py']);
+    let stdoutData = '';
+    let stderrData = '';
     
     configLoader.stdout.on('data', (data) => {
+      stdoutData += data;
       log(`Config loader output: ${data}`);
     });
     
     configLoader.stderr.on('data', (data) => {
+      stderrData += data;
       log(`Config loader error: ${data}`);
     });
     
     configLoader.on('close', (code) => {
       if (code === 0) {
+        // Verify generated files exist
+        const expectedFiles = ['commands.ts', 'devices.ts', 'ui.ts'];
+        const missingFiles = expectedFiles.filter(file => 
+          !fs.existsSync(path.join(generatedDir, file))
+        );
+        
+        if (missingFiles.length > 0) {
+          const error = new Error(`Failed to generate files: ${missingFiles.join(', ')}`);
+          log(error.message);
+          reject(error);
+          return;
+        }
+        
         log('TypeScript configs generated successfully');
         resolve();
       } else {
-        const error = new Error(`Config loader exited with code ${code}`);
+        const error = new Error(`Config loader exited with code ${code}: ${stderrData}`);
         log(error.message);
         reject(error);
       }
