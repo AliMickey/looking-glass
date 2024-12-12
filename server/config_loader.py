@@ -79,7 +79,7 @@ export const CommandConfigSchema = z.object({{
 export type CommandConfig = z.infer<typeof CommandConfigSchema>;
 
 // Define all available commands
-export const COMMANDS: Record<string, CommandConfig> = {json.dumps(commands_config['commands'], indent=2)};
+export const COMMANDS: Record<string, CommandConfig> = {json.dumps(commands_config['commands'], indent=2).replace('\n', '\n  ')};
 """)
 
     with open(str(ts_config_dir / 'devices.ts'), 'w') as f:
