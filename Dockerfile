@@ -4,12 +4,10 @@ WORKDIR /app
 COPY package*.json ./
 COPY client ./client
 COPY server ./server
-COPY db ./db
 COPY vite.config.ts ./
 COPY tailwind.config.ts ./
 COPY postcss.config.js ./
 COPY tsconfig.json ./
-COPY drizzle.config.ts ./
 RUN npm install
 RUN npm run build
 
@@ -17,36 +15,33 @@ RUN npm run build
 FROM python:3.11-slim
 WORKDIR /app
 
-# Install Node.js
-RUN apt-get update && apt-get install -y curl && \
+# Install Node.js and required tools
+RUN apt-get update && \
+    apt-get install -y curl wget && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy Python requirements
-COPY pyproject.toml ./
-RUN pip install netmiko pyyaml
+# Install minimal Python packages
+RUN pip install --no-cache-dir netmiko pyyaml
 
-# Copy built assets
+# Copy built assets and config
 COPY --from=builder /app/dist ./dist
 COPY server/config ./config
 
-# Install production dependencies
+# Install production Node.js dependencies
 COPY package*.json ./
 RUN npm install --production
 
-# Install Python dependencies from pyproject.toml
-COPY pyproject.toml ./
-RUN pip install -e .
-
-# Set permissions for the app directory
+# Set permissions and user
 RUN chown -R nobody:nogroup /app
-
-# Switch to non-root user
 USER nobody
 
+# Configure port
 ARG PORT=5000
 ENV PORT=${PORT}
 EXPOSE ${PORT}
+
+# Start application
 CMD ["node", "dist/index.js"]

@@ -1,15 +1,44 @@
+# Dependencies
 node_modules
+__pycache__
+*.pyc
+
+# Build outputs
 dist
 dist-server
+
+# Development files
 .git
 .gitignore
 .env
+.env.*
 *.log
 .vscode
-__pycache__
-*.pyc
 .DS_Store
+*.test.*
+*.spec.*
+coverage
+
+# Documentation
 README.md
+docs/
+
+# Docker files
 docker-compose.yml
 Dockerfile
 .dockerignore
+
+# Database files
+*.sqlite
+*.db
+
+# Cache
+.cache
+.npm
+.yarn
+
+# Editor files
+*.swp
+*.swo
+.idea/
+*.sublime-*

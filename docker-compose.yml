@@ -8,39 +8,11 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=${PORT:-5000}
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/networkmon
-    depends_on:
-      db:
-        condition: service_healthy
     volumes:
       - ./server/config:/app/config:ro
-    networks:
-      - app-network
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:${PORT:-5000}/api/locations"]
       interval: 10s
       timeout: 5s
       retries: 3
-
-  db:
-    image: postgres:15-alpine
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=networkmon
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgres_data:
-
-networks:
-  app-network:
-    driver: bridge
+      start_period: 10s
