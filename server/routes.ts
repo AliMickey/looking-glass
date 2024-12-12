@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { LOCATIONS } from "./config";
 import { executeCommand } from "./device";
-import { getDeviceCommands } from "./config/devices";
+import { getDeviceCommands, DEVICES } from "./config/devices";
 
 export function registerRoutes(app: Express): Server {
   const httpServer = createServer(app);
