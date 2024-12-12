@@ -1,0 +1,16 @@
+ttaching to app-1
+app-1  | node:internal/modules/cjs/loader:1228
+app-1  |   throw err;
+app-1  |   ^                                                                                                                                                                           
+app-1  |                                                                                                                                                                               
+app-1  | Error: Cannot find module '/app/dist/index.js'                                                                                                                                
+app-1  |     at Module._resolveFilename (node:internal/modules/cjs/loader:1225:15)                                                                                                     
+app-1  |     at Module._load (node:internal/modules/cjs/loader:1051:27)                                                                                                                
+app-1  |     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:173:12)                                                                                    
+app-1  |     at node:internal/main/run_main_module:28:49 {                                                                                                                             
+app-1  |   code: 'MODULE_NOT_FOUND',                                                                                                                                                   
+app-1  |   requireStack: []                                                                                                                                                            
+app-1  | }
+app-1  |                                                                                                                                                                               
+app-1  | Node.js v20.18.1                                                                                                                                                              
+app-1 exited with code 0
