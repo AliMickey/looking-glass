@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build: .
@@ -8,6 +6,4 @@ services:
     volumes:
       - ./server/config:/app/server/config:ro
       - ./server/assets:/app/server/assets:ro
-    environment:
-      - NODE_ENV=production
-      - PORT=5000
+    restart: unless-stopped
