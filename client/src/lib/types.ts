@@ -7,9 +7,12 @@ export interface Location {
 }
 
 export interface Command {
-  type: 'ping' | 'traceroute' | 'mtr' | 'bgp_path' | 'bgp_community' | 'bgp_route';
+  type: string;
   label: string;
+  template: string;
+  description?: string;
   subType?: 'path' | 'community' | 'route';
+  inputPlaceholder: string;
 }
 
 export interface DeviceConfig {

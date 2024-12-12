@@ -23,6 +23,7 @@ interface CommandSelectorProps {
 import { Button } from "@/components/ui/button";
 
 interface CommandSelectorProps {
+  deviceHost: string;
   selectedCommand: Command | null;
   onCommandSelect: (command: Command) => void;
   queryTarget: string;
@@ -32,6 +33,7 @@ interface CommandSelectorProps {
 }
 
 export default function CommandSelector({
+  deviceHost,
   selectedCommand,
   onCommandSelect,
   queryTarget,
@@ -39,12 +41,18 @@ export default function CommandSelector({
   onSubmit,
   isLoading
 }: CommandSelectorProps) {
+  const { data: commands = [] } = useQuery({
+    queryKey: ['commands', deviceHost],
+    queryFn: () => fetchAvailableCommands(deviceHost),
+    enabled: !!deviceHost,
+  });
+
   return (
     <div className="flex flex-col md:flex-row gap-4">
       <Select
         value={selectedCommand?.type}
         onValueChange={(value) => {
-          const command = COMMANDS.find(c => c.type === value);
+          const command = commands.find(c => c.type === value);
           if (command) onCommandSelect(command);
         }}
       >
@@ -52,7 +60,7 @@ export default function CommandSelector({
           <SelectValue placeholder="Select command" />
         </SelectTrigger>
         <SelectContent>
-          {COMMANDS.map((command) => (
+          {commands.map((command) => (
             <SelectItem key={command.type} value={command.type}>
               {command.label}
             </SelectItem>
@@ -61,7 +69,7 @@ export default function CommandSelector({
       </Select>
 
       <Input
-        placeholder={selectedCommand ? QUERY_TYPES[selectedCommand.type.split('_')[0]] : "Select a command first"}
+        placeholder={selectedCommand?.inputPlaceholder || "Select a command first"}
         value={queryTarget}
         onChange={(e) => onQueryTargetChange(e.target.value)}
         className="flex-1"
