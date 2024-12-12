@@ -16,23 +16,32 @@ export type DeviceConfig = z.infer<typeof DeviceConfigSchema>;
 
 // Example device configurations
 export const DEVICES: Record<string, DeviceConfig> = {
-  'router1.chi': {
-    host: '192.168.1.1',
-    username: 'admin',
-    password: 'secret',
-    device_type: 'cisco_ios',
-    description: 'Chicago Core Router 1',
-    enabled_commands: ['ping', 'traceroute', 'bgp_path', 'bgp_route'],
-    location_id: 'chi'
+  "router1.chi": {
+    "host": "192.168.1.1",
+    "username": "admin",
+    "password": "secret",
+    "device_type": "cisco_ios",
+    "description": "Chicago Core Router 1",
+    "enabled_commands": [
+      "ping",
+      "traceroute",
+      "bgp_path",
+      "bgp_route"
+    ],
+    "location_id": "chi"
   },
-  'router2.nyc': {
-    host: '192.168.1.2',
-    username: 'admin',
-    password: 'secret',
-    device_type: 'cisco_ios',
-    description: 'New York Core Router 1',
-    enabled_commands: ['ping', 'traceroute', 'mtr'],
-    location_id: 'nyc'
+  "router2.nyc": {
+    "host": "192.168.1.2",
+    "username": "admin",
+    "password": "secret",
+    "device_type": "cisco_ios",
+    "description": "New York Core Router 1",
+    "enabled_commands": [
+      "ping",
+      "traceroute",
+      "mtr"
+    ],
+    "location_id": "nyc"
   }
 };
 

@@ -24,10 +24,10 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Start application"
+args = "Config Validator"
 
 [[workflows.workflow]]
-name = "Start application"
+name = "Config Validator"
 author = "agent"
 
 [workflows.workflow.metadata]
@@ -38,5 +38,5 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
+args = "python3 server/config_loader.py && npm run dev"
 waitForPort = 5000

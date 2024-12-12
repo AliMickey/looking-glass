@@ -5,4 +5,5 @@ description = "Add your description here"
 requires-python = ">=3.11"
 dependencies = [
     "netmiko>=4.5.0",
+    "pyyaml>=6.0.2",
 ]
