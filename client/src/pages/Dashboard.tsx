@@ -12,14 +12,24 @@ export default function Dashboard() {
   const [queryTarget, setQueryTarget] = useState<string>("");
 
   const { data: locations } = useQuery<Location[]>({
-    queryKey: ['/api/locations'],
+    queryKey: ['locations'],
+    queryFn: async () => {
+      const response = await fetch('/api/locations');
+      if (!response.ok) throw new Error('Failed to fetch locations');
+      return response.json();
+    },
   });
 
   const [shouldExecute, setShouldExecute] = useState(false);
 
-  const { data, isLoading, error } = useQuery<{ output: string; error?: string }>({
-    queryKey: ['/api/execute', selectedLocation?.id, selectedCommand?.type, queryTarget],
-    enabled: !!(selectedLocation && selectedCommand && queryTarget && shouldExecute),
+  const { data, isLoading, error, refetch } = useQuery<{ output: string; error?: string }>({
+    queryKey: ['execute', selectedLocation?.id, selectedCommand?.type, queryTarget],
+    queryFn: async () => {
+      const response = await fetch(`/api/execute?locationId=${selectedLocation?.id}&command=${selectedCommand?.type}&target=${encodeURIComponent(queryTarget)}`);
+      if (!response.ok) throw new Error('Failed to execute command');
+      return response.json();
+    },
+    enabled: false,
   });
 
   const handleExecute = () => {
@@ -51,6 +61,7 @@ export default function Dashboard() {
         {selectedLocation && (
           <Card className="p-6 space-y-4">
             <CommandSelector
+              deviceHost={selectedLocation.deviceHost}
               selectedCommand={selectedCommand}
               onCommandSelect={(cmd) => {
                 setSelectedCommand(cmd);
@@ -61,7 +72,10 @@ export default function Dashboard() {
                 setQueryTarget(val);
                 setShouldExecute(false);
               }}
-              onSubmit={handleExecute}
+              onSubmit={() => {
+                setShouldExecute(true);
+                refetch();
+              }}
               isLoading={isLoading}
             />
 
