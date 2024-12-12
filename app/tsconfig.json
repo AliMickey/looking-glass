@@ -12,8 +12,7 @@
     "allowJs": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": false,
-    "outDir": "./dist",
+    "noEmit": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["client/src/*"]

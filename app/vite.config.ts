@@ -47,12 +47,16 @@ export default defineConfig({
     }
   },
   server: {
-    port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
-    host: process.env.HOST || "0.0.0.0",
-    // Add better error handling
+    port: process.env.PORT ? parseInt(process.env.PORT, 10) : 5000,
+    host: "0.0.0.0",
     hmr: {
-      overlay: true
+      clientPort: 443,
+      host: process.env.HOST || "0.0.0.0"
     }
+  },
+  preview: {
+    port: process.env.PORT ? parseInt(process.env.PORT, 10) : 5000,
+    host: "0.0.0.0"
   },
   // Add better error handling during build
   clearScreen: false,
