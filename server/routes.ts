@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { LOCATIONS } from "./config";
 import { executeCommand } from "./device";
-import { getDeviceCommands, DEVICES } from "./config/devices";
+import { getDeviceCommands, DEVICES } from "./generated/devices";
 
 export function registerRoutes(app: Express): Server {
   const httpServer = createServer(app);
@@ -16,7 +16,6 @@ export function registerRoutes(app: Express): Server {
     res.json(commands);
   });
 
-
   app.get("/api/execute", async (req, res) => {
     const { locationId, command, target } = req.query;
 
@@ -24,7 +23,7 @@ export function registerRoutes(app: Express): Server {
       return res.status(400).json({ error: "Missing required parameters" });
     }
 
-    const location = LOCATIONS.find(l => l.id === locationId);
+    const location = LOCATIONS.find((l) => l.id === locationId);
     if (!location) {
       return res.status(404).json({ error: "Location not found" });
     }
@@ -33,11 +32,12 @@ export function registerRoutes(app: Express): Server {
       const output = await executeCommand(
         location.deviceHost,
         command as string,
-        target as string
+        target as string,
       );
       res.json({ output });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
       res.status(500).json({ error: errorMessage });
     }
   });
