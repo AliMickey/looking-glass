@@ -1,75 +1,49 @@
-# Build stage
-FROM node:20-slim AS builder
+FROM node:20-bullseye-slim AS builder
 
-# Install necessary build tools and dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    python3 \
-    make \
-    g++ \
-    git && \
-    rm -rf /var/lib/apt/lists/*
-
+# Set working directory
 WORKDIR /app
 
-# Copy package files first for better layer caching
+# Copy package files first to leverage Docker cache
 COPY app/package*.json ./
 
-# Install all dependencies with specific version of npm
-RUN npm install -g npm@10.2.4 && \
-    npm ci
+RUN npm install
 
-# Copy application code
+# Install dependencies
+RUN npm ci
+
+# Copy the rest of the application code
 COPY app/ ./
-COPY config/ /config/
 
-# Build application
+# Build TypeScript application
 RUN npm run build
 
-# Production stage
-FROM node:20-slim AS runner
-
-# Install production system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    dumb-init \
-    curl && \
-    rm -rf /var/lib/apt/lists/*
+# Production image
+FROM node:20-bullseye-slim
 
 # Create non-root user
-RUN groupadd -r photoglass && \
-    useradd -r -g photoglass -s /bin/false photoglass && \
-    mkdir -p /app /config && \
-    chown photoglass:photoglass /app /config
+RUN groupadd -r appuser && useradd -r -g appuser appuser
 
+# Set working directory
 WORKDIR /app
 
-# Copy only production necessary files
-COPY --from=builder --chown=photoglass:photoglass /app/dist ./dist
-COPY --from=builder --chown=photoglass:photoglass /app/package*.json ./
-COPY --from=builder --chown=photoglass:photoglass /config /config
+# Copy built artifacts and dependencies
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
 
-# Install production dependencies only
-ENV NODE_ENV=production
-RUN npm ci --only=production && \
-    npm cache clean --force
+# Set permissions
+RUN chown -R appuser:appuser /app
 
 # Switch to non-root user
-USER photoglass
+USER appuser
 
-# Set production environment and configuration
-ENV HOST=0.0.0.0 \
-    PORT=3000
+# Set production environment
+ENV NODE_ENV=production \
+    HOST=0.0.0.0 \
+    PORT=5000
 
-# Add healthcheck
-HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:3000/health || exit 1
-
-# Expose application port
-EXPOSE 3000
-
-# Use dumb-init as PID 1
-ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+# Expose port
+EXPOSE 5000
 
 # Start application
-CMD ["npm", "run", "start"]
+CMD ["node", "./dist/server/index.js"]

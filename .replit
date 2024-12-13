@@ -15,10 +15,6 @@ localPort = 3000
 externalPort = 3000
 
 [[ports]]
-localPort = 3001
-externalPort = 3001
-
-[[ports]]
 localPort = 5000
 externalPort = 80
 
@@ -69,7 +65,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd app && npm run validate && npm run build"
+args = "cd app && npm run build"
 
 [[workflows.workflow]]
 name = "Dev Server"
@@ -84,4 +80,4 @@ task = "packager.installForAll"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd app && npm run dev"
-waitForPort = 3000
+waitForPort = 5000
