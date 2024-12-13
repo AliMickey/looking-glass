@@ -65,29 +65,58 @@ app.use((req, res, next) => {
     }
 
     // Get port from environment variable (required for Cloud Run) or use default
-    const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
+    // Get port from environment variable (required for Cloud Run) or use default
+    const PORT = parseInt(process.env.PORT || '8080', 10);
     const HOST = "0.0.0.0"; // Always bind to all interfaces for Cloud Run
 
     try {
-      // Ensure proper shutdown handling for Cloud Run
+      // Enhanced Cloud Run shutdown handling
       const signals = ['SIGTERM', 'SIGINT'] as const;
+      let isShuttingDown = false;
       
       signals.forEach((signal) => {
         process.on(signal, () => {
+          if (isShuttingDown) {
+            log(`Received another ${signal}, forcing shutdown`, 'server');
+            process.exit(1);
+          }
+          
+          isShuttingDown = true;
           log(`Received ${signal}, shutting down gracefully`, 'server');
+          
+          // Give active connections 10 seconds to complete
+          const forcedShutdownTimeout = setTimeout(() => {
+            log('Forced shutdown after timeout', 'server');
+            process.exit(1);
+          }, 10000);
+          
           server.close(() => {
-            log('Server closed', 'server');
+            clearTimeout(forcedShutdownTimeout);
+            log('Server closed successfully', 'server');
             process.exit(0);
           });
         });
       });
 
-      server.listen(PORT, HOST, () => {
-        log(`Server running at http://${HOST}:${PORT}`);
-        log(`Environment: ${app.get("env")}`);
-        log(`Process ID: ${process.pid}`);
-        log(`Ready to handle requests`);
-      });
+      // Attempt to start server with retries on different ports if needed
+      const startServer = (retryCount = 0) => {
+        server.listen(PORT + retryCount, HOST, () => {
+          const actualPort = (server.address() as any).port;
+          log(`Server running at http://${HOST}:${actualPort}`, 'server');
+          log(`Environment: ${app.get("env")}`, 'server');
+          log(`Process ID: ${process.pid}`, 'server');
+          log(`Ready to handle requests`, 'server');
+        }).on('error', (error: NodeJS.ErrnoException) => {
+          if (error.code === 'EADDRINUSE' && retryCount < 3) {
+            log(`Port ${PORT + retryCount} is in use, trying next port`, 'server');
+            startServer(retryCount + 1);
+          } else {
+            throw error;
+          }
+        });
+      };
+
+      startServer();
 
       // Handle server errors
       server.on('error', (error: NodeJS.ErrnoException) => {

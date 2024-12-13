@@ -32,30 +32,11 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Network Monitor"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "Build Test"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Dev Server"
-
-[[workflows.workflow]]
-name = "Network Monitor"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd app && PORT=8080 npm run dev"
-waitForPort = 8080
+args = "Network Monitor"
 
 [[workflows.workflow]]
 name = "Build Test"
@@ -72,7 +53,7 @@ task = "shell.exec"
 args = "cd app && npm run build"
 
 [[workflows.workflow]]
-name = "Dev Server"
+name = "Network Monitor"
 author = "agent"
 
 [workflows.workflow.metadata]

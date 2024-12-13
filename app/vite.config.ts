@@ -6,38 +6,27 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
 
-// https://vitejs.dev/config/
-export default defineConfig(({ command, mode }) => ({
+export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client/src"),
     },
-    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']
   },
   root: "./client",
   build: {
     outDir: "../dist/client",
     emptyOutDir: true,
-    copyPublicDir: true,
-    minify: mode === 'production' ? 'terser' : false,
     sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'wouter']
-        }
-      }
-    }
   },
   server: {
-    port: PORT,
-    host: "0.0.0.0",
-    strictPort: true,
+    port: parseInt(process.env.PORT || '8080', 10),
+    host: "0.0.0.0", // Required for Cloud Run
+    strictPort: false, // Allow fallback to other ports if needed
     hmr: {
-      clientPort: mode === 'production' ? 443 : PORT,
-      port: PORT,
-      host: process.env.VITE_HMR_HOST || "0.0.0.0"
+      clientPort: parseInt(process.env.PORT || '8080', 10),
+      port: parseInt(process.env.VITE_HMR_PORT || '24678', 10),
+      host: '0.0.0.0'
     }
   },
   preview: {
@@ -46,8 +35,5 @@ export default defineConfig(({ command, mode }) => ({
     strictPort: true
   },
   clearScreen: false,
-  logLevel: mode === 'production' ? 'error' : 'info',
-  define: {
-    __PORT__: PORT
-  }
-}));
+  logLevel: "info"
+});
