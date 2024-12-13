@@ -55,7 +55,7 @@ export type UIConfig = z.infer<typeof UIConfigSchema>;
 // Simple function to load and validate YAML files
 function loadYamlConfig<T>(filePath: string, schema: z.ZodSchema<T>): T {
   try {
-    // Move up one directory from /app to get to project root where /config is
+    // Move up one directory from app to get to project root where /config is
     const projectRoot = path.resolve(process.cwd(), '..');
     const configPath = path.join(projectRoot, 'config', filePath);
     console.log(`Loading config from: ${configPath}`);
@@ -106,7 +106,7 @@ export function loadConfig() {
       uiConfig: {
         branding: {
           logo: { light: '', dark: '' },
-          header: { title: 'Photonglass' },
+          header: { title: 'photonglass' },
           footer: {
             text: '',
             links: [],

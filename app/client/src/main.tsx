@@ -6,6 +6,9 @@ import { Toaster } from "@/components/ui/toaster";
 import App from './App';
 import "./index.css";
 
+// Set document title
+document.title = "photonglass - Network Monitoring";
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>

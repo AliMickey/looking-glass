@@ -142,7 +142,7 @@ app.use((req, res, next) => {
       process.exit(1);
     }
   } catch (error) {
-    log('Failed to start server:', error instanceof Error ? error.message : String(error));
+    log('[photonglass] Failed to start server:', error instanceof Error ? error.message : String(error));
     console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace available');
     process.exit(1);
   }

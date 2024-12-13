@@ -48,11 +48,11 @@ export async function setupVite(app: Express, server: Server) {
         middlewareMode: true,
         hmr: {
           server,
-          port: parseInt(process.env.VITE_HMR_PORT || '24678', 10),
+          port: 24678,
           host: '0.0.0.0'
         },
         host: '0.0.0.0', // Always bind to all interfaces for Cloud Run
-        port: parseInt(process.env.PORT || '8080', 10),
+        port: 5000,
         strictPort: true, // Fail if port is in use
       },
       appType: "custom",
