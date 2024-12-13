@@ -6,9 +6,12 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# Copy source files
+# Copy only necessary source files
 COPY . .
-RUN npm run build
+
+# Install dependencies and build
+RUN npm ci && \
+    npm run build
 
 # Production stage
 FROM node:20-slim

@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "start": "NODE_ENV=production node --experimental-specifier-resolution=node --enable-source-maps dist/server/index.js",
     "serve": "npm run build && npm run start",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "docker:build": "docker build -t photonglass .",
+    "docker:run": "docker run -p 8080:8080 -v $(pwd)/../config:/app/config photonglass"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.0.4",
@@ -41,7 +42,7 @@
     "framer-motion": "^10.12.18",
     "lucide-react": "^0.244.0",
     "memorystore": "^1.6.7",
-    "netmiko": "^0.1.0",
+    
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.45.1",
