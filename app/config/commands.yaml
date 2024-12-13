@@ -1,0 +1,27 @@
+# Network monitoring commands configuration
+commands:
+  ping:
+    type: "network"
+    label: "Ping"
+    command: "ping"
+    description: "Send ICMP echo requests to host"
+    template: "ping -c {{ count }} -W {{ timeout }} {{ target }}"
+    inputPlaceholder: "Enter hostname or IP address"
+    parameters:
+      - name: "count"
+        type: "number"
+        default: 4
+      - name: "timeout"
+        type: "number"
+        default: 2
+  traceroute:
+    type: "network"
+    label: "Traceroute"
+    command: "traceroute"
+    description: "Print the route packets trace to network host"
+    template: "traceroute -m {{ max_hops }} {{ target }}"
+    inputPlaceholder: "Enter hostname or IP address"
+    parameters:
+      - name: "max_hops"
+        type: "number"
+        default: 30

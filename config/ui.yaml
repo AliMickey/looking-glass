@@ -3,10 +3,10 @@ branding:
     light: "/assets/logo-light.svg"
     dark: "/assets/logo-dark.svg"
   header:
-    title: "Network Monitor"
-    subtitle: "Infrastructure Monitoring Tool"
+    title: "Photonglass"
+    subtitle: "Network Monitoring and Diagnostic Tool"
   footer:
-    text: "© 2024 Network Monitor"
+    text: "© 2024 Photonglass"
     links:
       - label: "Documentation"
         url: "/docs"

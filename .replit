@@ -40,11 +40,11 @@ args = "Build Test"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Network Monitor"
+args = "Docker Build"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Docker Build"
+args = "Photonglass Server"
 
 [[workflows.workflow]]
 name = "Build Test"
@@ -61,21 +61,6 @@ task = "shell.exec"
 args = "cd app && npm run build"
 
 [[workflows.workflow]]
-name = "Network Monitor"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd app && npm run dev"
-waitForPort = 8080
-
-[[workflows.workflow]]
 name = "Docker Build"
 author = "agent"
 
@@ -88,3 +73,18 @@ task = "packager.installForAll"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd app && npm install && npm run build"
+
+[[workflows.workflow]]
+name = "Photonglass Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd app && npm run dev"
+waitForPort = 3000

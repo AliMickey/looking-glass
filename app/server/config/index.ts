@@ -106,7 +106,7 @@ export function loadConfig() {
       uiConfig: {
         branding: {
           logo: { light: '', dark: '' },
-          header: { title: 'Network Monitor' },
+          header: { title: 'Photonglass' },
           footer: {
             text: '',
             links: [],
