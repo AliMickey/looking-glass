@@ -64,17 +64,52 @@ app.use((req, res, next) => {
       serveStatic(app);
     }
 
-    // Get port and host from environment variables or use defaults
-    const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
-    const HOST = process.env.HOST || "0.0.0.0";
+    // Get port from environment variable (required for Cloud Run) or use default
+    const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
+    const HOST = "0.0.0.0"; // Always bind to all interfaces for Cloud Run
 
     try {
+      // Ensure proper shutdown handling for Cloud Run
+      const signals = ['SIGTERM', 'SIGINT'] as const;
+      
+      signals.forEach((signal) => {
+        process.on(signal, () => {
+          log(`Received ${signal}, shutting down gracefully`, 'server');
+          server.close(() => {
+            log('Server closed', 'server');
+            process.exit(0);
+          });
+        });
+      });
+
       server.listen(PORT, HOST, () => {
         log(`Server running at http://${HOST}:${PORT}`);
         log(`Environment: ${app.get("env")}`);
+        log(`Process ID: ${process.pid}`);
+        log(`Ready to handle requests`);
+      });
+
+      // Handle server errors
+      server.on('error', (error: NodeJS.ErrnoException) => {
+        if (error.syscall !== 'listen') {
+          throw error;
+        }
+
+        switch (error.code) {
+          case 'EACCES':
+            log(`Port ${PORT} requires elevated privileges`, 'error');
+            process.exit(1);
+            break;
+          case 'EADDRINUSE':
+            log(`Port ${PORT} is already in use`, 'error');
+            process.exit(1);
+            break;
+          default:
+            throw error;
+        }
       });
     } catch (error) {
-      log(`Failed to start server: ${error instanceof Error ? error.message : String(error)}`);
+      log(`Failed to start server: ${error instanceof Error ? error.message : String(error)}`, 'error');
       process.exit(1);
     }
   } catch (error) {

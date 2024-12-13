@@ -8,7 +8,7 @@ channel = "stable-24_05"
 [deployment]
 deploymentTarget = "cloudrun"
 build = ["npm", "run", "build"]
-run = ["sh", "-c", "cd app && npm run dev"]
+run = ["sh", "-c", "cd app && PORT=8080 npm run dev"]
 
 [[ports]]
 localPort = 3000
@@ -17,6 +17,10 @@ externalPort = 3000
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 8080
+externalPort = 8080
 
 [workflows]
 runButton = "Project"
@@ -50,8 +54,8 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd app && npm run dev"
-waitForPort = 5000
+args = "cd app && PORT=8080 npm run dev"
+waitForPort = 8080
 
 [[workflows.workflow]]
 name = "Build Test"
@@ -80,4 +84,4 @@ task = "packager.installForAll"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd app && npm run dev"
-waitForPort = 5000
+waitForPort = 8080

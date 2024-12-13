@@ -11,7 +11,10 @@
     "build:client": "tsc && vite build",
     "build:server": "esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outfile=dist/server/index.js",
     "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "start": "NODE_ENV=production node --experimental-specifier-resolution=node --enable-source-maps dist/server/index.js",
+    "serve": "npm run build && npm run start",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.2",

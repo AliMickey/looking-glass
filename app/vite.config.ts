@@ -4,24 +4,15 @@ import path from "path";
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
-    react({
-      // Babel configuration for better JSX handling
-      babel: {
-        plugins: [
-          ["@babel/plugin-transform-react-jsx", { runtime: "automatic" }]
-        ]
-      }
-    })
-  ],
+export default defineConfig(({ command, mode }) => ({
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client/src"),
     },
-    // Ensure proper module resolution
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']
   },
   root: "./client",
@@ -29,36 +20,34 @@ export default defineConfig({
     outDir: "../dist/client",
     emptyOutDir: true,
     copyPublicDir: true,
-    // Improve production build
-    minify: 'terser',
+    minify: mode === 'production' ? 'terser' : false,
     sourcemap: true,
-    // Configure chunk splitting
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: [
-            'react',
-            'react-dom',
-            'wouter',
-            '@tanstack/react-query'
-          ]
+          vendor: ['react', 'react-dom', 'wouter']
         }
       }
     }
   },
   server: {
-    port: process.env.PORT ? parseInt(process.env.PORT, 10) : 5000,
+    port: PORT,
     host: "0.0.0.0",
+    strictPort: true,
     hmr: {
-      clientPort: 443,
-      host: process.env.HOST || "0.0.0.0"
+      clientPort: mode === 'production' ? 443 : PORT,
+      port: PORT,
+      host: process.env.VITE_HMR_HOST || "0.0.0.0"
     }
   },
   preview: {
-    port: process.env.PORT ? parseInt(process.env.PORT, 10) : 5000,
-    host: "0.0.0.0"
+    port: PORT,
+    host: "0.0.0.0",
+    strictPort: true
   },
-  // Add better error handling during build
   clearScreen: false,
-  logLevel: 'info'
-});
+  logLevel: mode === 'production' ? 'error' : 'info',
+  define: {
+    __PORT__: PORT
+  }
+}));
