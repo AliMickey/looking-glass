@@ -38,6 +38,10 @@ args = "Build Test"
 task = "workflow.run"
 args = "Network Monitor"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Docker Build"
+
 [[workflows.workflow]]
 name = "Build Test"
 author = "agent"
@@ -66,3 +70,17 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "cd app && npm run dev"
 waitForPort = 8080
+
+[[workflows.workflow]]
+name = "Docker Build"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd app && npm install && npm run build"
