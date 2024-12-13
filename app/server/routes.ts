@@ -28,19 +28,21 @@ export function registerRoutes(app: Express): Server {
     res.json(availableCommands);
   });
 
-  app.get("/api/execute", async (req: Request<{}, any, any, ExecuteQueryParams>, res: Response) => {
-    const { locationId, command, target } = req.query;
-
-    if (!locationId || !command || !target) {
-      return res.status(400).json({ error: "Missing required parameters" });
-    }
-
-    const location = LOCATIONS.find((l) => l.id === locationId);
-    if (!location) {
-      return res.status(404).json({ error: "Location not found" });
-    }
-
+  app.get<{}, any, any, ExecuteQueryParams>("/api/execute", async (req: Request<{}, any, any, ExecuteQueryParams>, res: Response, next: NextFunction) => {
     try {
+      const { locationId, command, target } = req.query;
+
+      if (!locationId || !command || !target) {
+        res.status(400).json({ error: "Missing required parameters" });
+        return;
+      }
+
+      const location = LOCATIONS.find((l) => l.id === locationId);
+      if (!location) {
+        res.status(404).json({ error: "Location not found" });
+        return;
+      }
+
       const output = await executeCommand(
         location.deviceHost,
         command,
@@ -48,8 +50,7 @@ export function registerRoutes(app: Express): Server {
       );
       res.json({ output });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
-      res.status(500).json({ error: errorMessage });
+      next(error);
     }
   });
 
