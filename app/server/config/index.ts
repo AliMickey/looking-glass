@@ -106,7 +106,7 @@ export function loadConfig() {
       uiConfig: {
         branding: {
           logo: { light: '', dark: '' },
-          header: { title: 'photonglass' },
+          header: { title: 'PhotonGlass' },
           footer: {
             text: '',
             links: [],
