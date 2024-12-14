@@ -4,7 +4,6 @@ import path from "path";
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
 const isProd = process.env.NODE_ENV === 'production';
 
 export default defineConfig({
@@ -24,14 +23,13 @@ export default defineConfig({
     }
   },
   server: {
-    port: PORT,
-    host: "0.0.0.0", // Required for Cloud Run
-    strictPort: true, // Fail if port is in use
+    port: 3000,
+    host: "0.0.0.0",
+    strictPort: true,
     hmr: isProd ? false : {
-      port: parseInt(process.env.VITE_HMR_PORT || '24678', 10),
+      port: 24678,
       host: '0.0.0.0',
-      protocol: 'ws',
-      clientPort: PORT // Use same port as server in Cloud Run
+      protocol: 'ws'
     }
   },
   preview: {
