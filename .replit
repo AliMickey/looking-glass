@@ -1,14 +1,10 @@
+
 modules = ["nodejs-20", "web", "postgresql-16", "python-3.11"]
-run = "npm run dev"
+run = "cd app && npm run dev"
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
 [nix]
 channel = "stable-24_05"
-
-[deployment]
-deploymentTarget = "cloudrun"
-build = ["npm", "run", "build"]
-run = ["sh", "-c", "cd app && PORT=8080 npm run dev"]
 
 [[ports]]
 localPort = 3000
@@ -25,66 +21,3 @@ externalPort = 8080
 [[ports]]
 localPort = 24678
 externalPort = 3001
-
-[workflows]
-runButton = "Project"
-
-[[workflows.workflow]]
-name = "Project"
-mode = "parallel"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Build Test"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Docker Build"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Photonglass Server"
-
-[[workflows.workflow]]
-name = "Build Test"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd app && npm run build"
-
-[[workflows.workflow]]
-name = "Docker Build"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd app && npm install && npm run build"
-
-[[workflows.workflow]]
-name = "Photonglass Server"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd app && PORT=5000 npm run dev"
-waitForPort = 5000
